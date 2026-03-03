@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C"{
+#endif
+
 #define Font_Width 8
 #define Font_Height 16
 
@@ -12,4 +16,10 @@ typedef struct{
 }tFontUTF8;
 
 extern const tFontUTF8 FontUTF8[];
+extern const uint32_t Font_Size;
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif
