@@ -15,3 +15,5 @@ uint8_t PWM_Input_GetDuty(void);
 #ifdef __cplusplus
 }
 #endif
+
+#endif
