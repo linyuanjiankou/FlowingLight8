@@ -27,6 +27,11 @@
 /* USER CODE BEGIN Includes */
 #include "tim2_pwm.h"
 #include "adc_pot.h"
+#include "pwm_input.h"
+#include "OLED.h"
+#include "key.h"
+#include "pre.h"
+#include "mode.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -47,6 +52,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+uint16_t current_freq = 5;
+uint32_t current_duty_num = 0;
 
 /* USER CODE END PV */
 
@@ -78,7 +85,10 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-
+  PWM_TIM2_Init();
+  PWM_TIM2_Start();
+  ADC_Pot_Start();
+  OLED_Init();
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -95,9 +105,7 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-  PWM_TIM2_Init();
-  PWM_TIM2_Start();
-  ADC_Pot_Init();
+  void KEY_ClearStatus();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -105,8 +113,18 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-    PWM_TIM2_Setfreq(50);
-    PWM_TIM2_Setduty(40);
+    switch (mode)
+    {
+      case MODE_PWM_OUTPUT:
+        MODE_PWM_OUTPUT_Run(current_freq, current_duty_num);
+      case MODE_PWM_ADC():
+        uint16_t current_freq = ADC_Pot_ReadFiltered();
+        MODE_PWM_ADC_Run(current_freq);
+      case MODE_FLOWINGLIGHT:
+        MODE_FLOWINGLIGHT_Run();
+      case MODE_PWM_INPUT:
+        MODE_PWM_INPUT_Run();
+    }
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
