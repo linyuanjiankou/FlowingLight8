@@ -23,7 +23,10 @@ typedef enum{
     MODE_MAX,
 }tMode;
 
-
+extern tMode current_mode;
+extern tKeyEvent is_long_pressed;
+extern tKeyEvent is_short_pressed; 
+extern tKeyEvent key_status;
 
 #define KEY1_PIN GPIO_PIN_3
 #define KEY1_PORT GPIOB
