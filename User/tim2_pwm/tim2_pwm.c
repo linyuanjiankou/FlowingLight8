@@ -2,7 +2,7 @@
 #include "tim.h"
 #include "stm32f1xx_ll_tim.h"
 
-static uint8_t duty = 50;
+static uint8_t duty = 10;
 
 void PWM_TIM2_Init(void)
 {
