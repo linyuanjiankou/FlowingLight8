@@ -6,8 +6,12 @@
 static uint16_t adc_buffer[ADC_FILTER_SIZE];
 static uint8_t adc_index = 0;
 
-void ADC_Pot_Init(void){
+void ADC_Pot_Start(void){
     HAL_ADC_Start(&hadc1);
+}
+
+void ADC_Pot_Stop(void){
+    HAL_ADC_Stop(&hadc1);
 }
 
 uint16_t ADC_Pot_Read(void){
@@ -26,10 +30,4 @@ uint16_t ADC_Pot_ReadFiltered(void){
         sum += adc_buffer[i];
     }
     return sum >> 3;
-}
-
-uint32_t ADC_Pot_GetVoltage_mV(void){
-    uint32_t raw = ADC_Pot_ReadFiltered();
-    raw = raw*3300/4095;
-    return raw;
 }

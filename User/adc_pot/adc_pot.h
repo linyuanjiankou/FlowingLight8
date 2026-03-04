@@ -7,10 +7,10 @@
 extern "C"{
 #endif
 
-void ADC_Pot_Init(void);
+void ADC_Pot_Start(void);
 uint16_t ADC_Pot_Read(void);
 uint16_t ADC_Pot_ReadFiltered(void);
-uint32_t ADC_Pot_GetVoltage_mV(void);
+void ADC_Pot_Stop(void);
 
 #ifdef __cplusplus
 }
