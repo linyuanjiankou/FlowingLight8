@@ -79,7 +79,7 @@ void OLED_ShowString(uint8_t page, uint8_t col, char *str){
     }
 }
 
-void OLED_ShowNum(uint8_t page, uint8_t col, uint32_t num){
-    snprintf(oled_buffer, sizeof(oled_buffer), "%d", num);
+void OLED_ShowNum(uint8_t page, uint8_t col, float num){
+    snprintf(oled_buffer, sizeof(oled_buffer), "%.1f", num);
     OLED_ShowString(page, col, oled_buffer);
 }
