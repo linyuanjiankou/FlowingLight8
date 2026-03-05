@@ -11,6 +11,10 @@ extern "C" {
 #include "pwm_input.h"
 #include "tim2_pwm.h"
 
+void MODE_PWM_OUTPUT_Run(uint16_t freq, uint32_t duty_num);
+void MODE_PWM_ADC(uint16_t freq);
+void MODE_FLOWINGLIGHT_Run();
+
 
 #ifdef __cplusplus
 }

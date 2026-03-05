@@ -62,10 +62,43 @@ void MODE_PWM_ADC(uint16_t freq){
     void KEY_ClearStatus();
 }
 
-void MODE_FLOWINGLIGHT_Run(){
 
+
+void MODE_FLOWINGLIGHT_Run(){
+    if(is_long_pressed) is_long_pressed = 0;
+    uint8_t light[8] = {0,1,2,3,4,5,6,7};
+    uint8_t period[3] = {50,200,400};
+    uint8_t n = 0;
+    uint8_t i = 0;
+    uint8_t derection = 0;
+
+    while(is_long_pressed == 0){
+    OLED_ShowString(0, 0, text1);
+    OLED_ShowString(0, 40, current_mode);
+    
+    if(derection){
+        while(1){
+            LED(n) = 1;
+            LED(n-1) = 0;
+            Delay_ms(period[i]);
+            n = (n+1) % 8;
+            if(is_short_pressed || is_long_pressed) break;
+        }
+    }
+    if(!derection){
+        while(1){
+            LED(n) = 1;
+            LED(n+1) = 0;
+            Delay_ms(period[i]);
+            n = (n+1) % 8;
+            if(is_short_pressed || is_long_pressed) break;
+        }
+    }
+    if(key_status == KEY1_SHORT) {i = (i+1) % 3;}
+    if(key_status == KEY2_SHORT) {derection = !derection;}
+    }
 }
 
 void MODE_PWM_INPUT_Run(){
-
+    if(is_long_pressed) is_long_pressed = 0;
 }
