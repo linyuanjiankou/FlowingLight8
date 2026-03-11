@@ -25,7 +25,7 @@ void PWM_TIM2_Setfreq(uint16_t freq)
     if(freq < 5) freq = 5;
     if(freq > 100) freq = 100;
 
-    uint32_t arr = 10000UL / (freq / 10) - 1;
+    uint32_t arr = 100000 / freq - 1;
     uint32_t ccr = (arr + 1) * duty / 100;
 
     LL_TIM_SetAutoReload(TIM2,arr);
