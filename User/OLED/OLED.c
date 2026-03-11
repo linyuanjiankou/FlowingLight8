@@ -29,13 +29,13 @@ void OLED_WriteCmd(uint8_t cmd){
     uint8_t buf[2];
     buf[0] = 0x00;
     buf[1] = cmd;
-    HAL_I2C_Master_Transmit(&hi2c1, OLED_ADDR, buf, 2, 100);
+    HAL_I2C_Master_Transmit(&hi2c2, OLED_ADDR, buf, 2, 100);
 }
 
 void OLED_WriteData(const uint8_t *data, uint16_t len){
     oled_buffer[0] = 0x40;
     memcpy(&oled_buffer[1], data, len);
-    HAL_I2C_Master_Transmit(&hi2c1, OLED_ADDR, (uint8_t *)oled_buffer, len+1, 100);
+    HAL_I2C_Master_Transmit(&hi2c2, OLED_ADDR, (uint8_t *)oled_buffer, len+1, 100);
 }
 
 void OLED_SetPos(uint8_t page, uint8_t col){
@@ -71,7 +71,7 @@ void OLED_ShowChar(uint8_t page, uint8_t col, uint8_t chr){
     }
 }
 
-void OLED_ShowString(uint8_t page, uint8_t col, char *str){
+void OLED_ShowString(uint8_t page, uint8_t col, const char *str){
     while(*str != '\0'){
         OLED_ShowChar(page, col, *str);
         col += Font_Width;
