@@ -31,3 +31,8 @@ uint16_t ADC_Pot_ReadFiltered(void){
     }
     return sum >> 3;
 }
+uint32_t ADC_Pot_GetVoltage_mV(void){
+    uint32_t raw = ADC_Pot_ReadFiltered();
+    raw = raw*3300/4095;
+    return raw;
+}

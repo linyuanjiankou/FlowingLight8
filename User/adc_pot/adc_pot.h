@@ -11,6 +11,7 @@ void ADC_Pot_Start(void);
 uint16_t ADC_Pot_Read(void);
 uint16_t ADC_Pot_ReadFiltered(void);
 void ADC_Pot_Stop(void);
+uint32_t ADC_Pot_GetVoltage_mV(void);
 
 #ifdef __cplusplus
 }
