@@ -6,14 +6,23 @@ extern "C" {
 #endif 
 
 #include "key.h"
-#include "OLED.h"
-#include "pre.h"
-#include "pwm_input.h"
-#include "tim2_pwm.h"
 
-void MODE_PWM_OUTPUT_Run(uint16_t freq, uint32_t duty_num);
-void MODE_PWM_ADC(uint16_t freq);
-void MODE_FLOWINGLIGHT_Run();
+typedef enum{
+    MODE_PWM_OUTPUT = 0,
+    MODE_PWM_ADC,
+    MODE_FLOWINGLIGHT,
+    // MODE_PWM_INPUT,
+    MODE_MAX,
+}tMode;
+
+extern tMode current_mode;
+
+void MODE_PWM_OUTPUT_Run(void);
+void MODE_PWM_ADC_OUTPUT_Run(void);
+void MODE_FLOWINGLIGHT_Run(void);
+char* OLED_ShowMode(tMode current_mode);
+
+#define no_long_pressed key[0].event != KEY_LONG && key[1].event != KEY_LONG
 
 
 #ifdef __cplusplus
