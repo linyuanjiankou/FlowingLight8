@@ -25,13 +25,12 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "tim2_pwm.h"
-#include "adc_pot.h"
-#include "pwm_input.h"
-#include "OLED.h"
-#include "key.h"
-#include "pre.h"
 #include "mode.h"
+#include "key.h"
+#include "adc_pot.h"
+#include "tim2_pwm.h"
+#include "OLED.h"
+#include "pre.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -52,9 +51,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-uint16_t current_freq = 5;
-uint32_t current_duty_num = 0;
-
+tMode current_mode = MODE_PWM_OUTPUT;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -85,10 +82,7 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  PWM_TIM2_Init();
-  PWM_TIM2_Start();
-  ADC_Pot_Start();
-  OLED_Init();
+
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -101,11 +95,14 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_ADC1_Init();
-  MX_I2C1_Init();
   MX_TIM1_Init();
   MX_TIM2_Init();
+  MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
-  void KEY_ClearStatus();
+	PWM_TIM2_Init();
+  PWM_TIM2_Start();
+  ADC_Pot_Start();
+  OLED_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -113,19 +110,28 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-    switch (mode)
+
+    /* USER CODE BEGIN 3 */
+    switch (current_mode)
     {
       case MODE_PWM_OUTPUT:
-        MODE_PWM_OUTPUT_Run(current_freq, current_duty_num);
-      case MODE_PWM_ADC():
-        uint16_t current_freq = ADC_Pot_ReadFiltered();
-        MODE_PWM_ADC_Run(current_freq);
+        MODE_PWM_OUTPUT_Run();
+        current_mode = MODE_PWM_ADC;
+				break;
+      case MODE_PWM_ADC:
+        MODE_PWM_ADC_OUTPUT_Run();
+        current_mode = MODE_FLOWINGLIGHT;
+				break;
       case MODE_FLOWINGLIGHT:
         MODE_FLOWINGLIGHT_Run();
-      case MODE_PWM_INPUT:
-        MODE_PWM_INPUT_Run();
+        current_mode = MODE_MAX;
+				break;
+			case MODE_MAX:
+        current_mode = MODE_PWM_OUTPUT;
+				break;
+      // case MODE_PWM_INPUT:
+      //   MODE_PWM_INPUT_Run();
     }
-    /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
 }

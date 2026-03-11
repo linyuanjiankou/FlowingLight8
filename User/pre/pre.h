@@ -5,14 +5,12 @@
 extern "C" {
 #endif 
 
-#include "stm32f1xx_hal.h"
 #include <stdint.h>
 
-
-void Delay_Init (void);
-void Delay_us (uint32_t nus);
+void Delay_Init(void);
+void Delay_us(uint32_t nus);
 void Delay_ms(uint32_t nms);
-
+	
 #define BITBAND(addr, bitnum) ((addr & 0xF0000000)+0x2000000+((addr &0xFFFFF)<<5)+(bitnum<<2)) 
 #define MEM_ADDR(addr)  *((volatile unsigned long  *)(addr)) 
 #define BIT_ADDR(addr, bitnum)   MEM_ADDR(BITBAND(addr, bitnum)) 
