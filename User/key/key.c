@@ -62,3 +62,9 @@ void Key_Scan(void){
         }
     }
 }
+
+void KEY_Clear(void){
+    for(char i = 0; i < 2; i++){
+        key[i].event = KEY_NONE;
+    }
+}

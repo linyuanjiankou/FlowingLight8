@@ -8,6 +8,7 @@ extern "C" {
 #endif
 
 void Key_Scan(void);
+void KEY_Clear(void);
 
 typedef enum{
     KEY_Free = 0,
