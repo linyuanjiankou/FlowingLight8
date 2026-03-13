@@ -33,16 +33,3 @@ void PWM_TIM2_Setfreq(uint16_t freq)
 
     LL_TIM_GenerateEvent_UPDATE(TIM2);
 }
-
-void PWM_TIM2_Setduty(uint32_t duty_per)
-{
-    if(duty_per > 100) duty_per = 100;
-    duty = duty_per;
-
-    uint32_t arr = LL_TIM_GetAutoReload(TIM2);
-    uint32_t ccr = duty * (arr + 1) / 100;
-
-    LL_TIM_OC_SetCompareCH1(TIM2,ccr);
-
-    LL_TIM_GenerateEvent_UPDATE(TIM2);
-}

@@ -11,7 +11,6 @@ void PWM_TIM2_Init(void);
 void PWM_TIM2_Start(void);
 void PWM_TIM2_Stop(void);
 void PWM_TIM2_Setfreq(uint16_t freq);
-void PWM_TIM2_Setduty(uint32_t duty_per);
 
 #ifdef __cplusplus
 }

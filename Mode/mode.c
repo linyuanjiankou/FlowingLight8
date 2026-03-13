@@ -4,15 +4,15 @@
 #include "key.h"
 #include "tim2_pwm.h"
 #include "pre.h"
+#include "stm32f1xx_ll_tim.h"
 
-uint8_t duty[3] = {10, 40, 90};
+uint8_t ccr[3] = {1, 5, 9};
 
 // const char text1[] = "Vol(mV):"; //4,0
 // const char text2[] = "Freq(Hz):"; //2,0
 // const char text3[] = "Duty(%):"; //4,0
 void MODE_PWM_OUTPUT_Run(void){    
     uint16_t freq = 5;
-    uint32_t duty_num = 0;
 
     uint32_t current_time = HAL_GetTick();
     uint32_t last_time = 0;
@@ -44,16 +44,43 @@ void MODE_PWM_OUTPUT_Run(void){
             if(freq > 100){freq = 5;}
             key[0].event = KEY_NONE;
             PWM_TIM2_Setfreq(freq);
-        }else if(key[1].event == KEY_SHORT){
-            duty_num = (duty_num + 1) % 3;
-            key[1].event = KEY_NONE;
-            PWM_TIM2_Setduty(duty[duty_num]);
         }
 
     }
+    LL_TIM_SetAutoReload(TIM2,9); //arr = 10-1
+    LL_TIM_OC_SetCompareCH1(TIM2, 1); //ccr = 1, duty = 10%
     PWM_TIM2_Stop();
     // OLED_Clear();
 
+}
+
+void MODE_PWM_LIGHT_Run(void){
+    uint32_t current_time = HAL_GetTick();
+    uint32_t last_time = 0;
+    uint8_t num = 0;
+
+    uint32_t ccr_num = 0;
+
+    PWM_TIM2_Start();
+
+    while (no_long_pressed){
+		current_time = HAL_GetTick();
+				
+        if(current_time - last_time >=10){
+            Key_Scan();
+            last_time = current_time;
+            num = (num + 1) % 20;
+        }
+
+        if(key[1].event == KEY_SHORT){
+            ccr_num = (ccr_num + 1) % 3;
+            key[1].event = KEY_NONE;
+            LL_TIM_OC_SetCompareCH1(TIM2,ccr[ccr_num]);
+            LL_TIM_GenerateEvent_UPDATE(TIM2);
+        }
+    }
+		
+	PWM_TIM2_Stop();
 }
 
 void MODE_PWM_ADC_OUTPUT_Run(void){
@@ -61,15 +88,18 @@ void MODE_PWM_ADC_OUTPUT_Run(void){
     uint32_t last_time = 0;
     uint8_t num = 0;
 
-    uint16_t adc_value = ADC_Pot_ReadFiltered();
-    uint32_t Vol = ADC_Pot_GetVoltage_mV();
-    uint16_t freq = (adc_value * 100) / 4095;
-
+    ADC_Pot_Start();
     PWM_TIM2_Start();
+
+    uint16_t adc_value = ADC_Pot_ReadFiltered();
+    // uint32_t Vol = ADC_Pot_GetVoltage_mV();
+    uint16_t freq = (adc_value * 100) / 4095;
 
     while(no_long_pressed){
         current_time = HAL_GetTick();
         // float true_freq = (float) freq / 10.0f;
+        adc_value = ADC_Pot_ReadFiltered();
+        freq = (adc_value * 100) / 4095;
         PWM_TIM2_Setfreq(freq);
         // if(num == 0){
             
@@ -81,7 +111,7 @@ void MODE_PWM_ADC_OUTPUT_Run(void){
         //     OLED_ShowString(4, 0, text1);
         //     OLED_ShowNum(4, 64, Vol);
         // }
-        if(current_time - last_time >=10){
+        if(current_time - last_time >= 10){
             adc_value = ADC_Pot_ReadFiltered();
             last_time = current_time;
             num = (num + 1) % 20;
@@ -89,6 +119,7 @@ void MODE_PWM_ADC_OUTPUT_Run(void){
 
     }
     PWM_TIM2_Stop();
+    ADC_Pot_Stop();
     // OLED_Clear();
 }
 void MODE_FLOWINGLIGHT_Run(void){
