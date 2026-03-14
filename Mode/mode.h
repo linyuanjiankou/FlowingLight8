@@ -22,6 +22,7 @@ void LED_Init(void);
 void MODE_PWM_OUTPUT_Run(void);
 void MODE_PWM_LIGHT_Run(void);
 void PA0_SetGPIO(void);
+void PA0_DefultGPIO(void);
 void MODE_PWM_ADC_OUTPUT_Run(void);
 void MODE_FLOWINGLIGHT_Run(void);
 // char* OLED_ShowMode(tMode current_mode);
