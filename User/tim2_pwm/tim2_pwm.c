@@ -30,6 +30,4 @@ void PWM_TIM2_Setfreq(uint16_t freq)
 
     LL_TIM_SetAutoReload(TIM2,arr);
     LL_TIM_OC_SetCompareCH1(TIM2,ccr);
-
-    LL_TIM_GenerateEvent_UPDATE(TIM2);
 }

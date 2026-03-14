@@ -51,7 +51,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-tMode current_mode = MODE_PWM_OUTPUT;
+tMode current_mode = MODE_PWM_ADC;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -101,7 +101,6 @@ int main(void)
   /* USER CODE BEGIN 2 */
 	PWM_TIM2_Init();
   PWM_TIM2_Start();
-  ADC_Pot_Start();
   OLED_Init();
   /* USER CODE END 2 */
 
@@ -116,18 +115,27 @@ int main(void)
     {
       case MODE_PWM_OUTPUT:
         MODE_PWM_OUTPUT_Run();
-        current_mode = MODE_PWM_ADC;
+        current_mode = MODE_PWM_LIGHT;
+        KEY_Clear();
 				break;
+      case MODE_PWM_LIGHT:
+        MODE_PWM_LIGHT_Run();
+        current_mode = MODE_PWM_ADC;
+        KEY_Clear();
+        break;
       case MODE_PWM_ADC:
         MODE_PWM_ADC_OUTPUT_Run();
         current_mode = MODE_FLOWINGLIGHT;
+        KEY_Clear();
 				break;
       case MODE_FLOWINGLIGHT:
         MODE_FLOWINGLIGHT_Run();
         current_mode = MODE_MAX;
+        KEY_Clear();
 				break;
 			case MODE_MAX:
         current_mode = MODE_PWM_OUTPUT;
+        KEY_Clear();
 				break;
       // case MODE_PWM_INPUT:
       //   MODE_PWM_INPUT_Run();
