@@ -11,6 +11,12 @@ uint8_t ccr[3] = {1, 5, 9};
 // const char text1[] = "Vol(mV):"; //4,0
 // const char text2[] = "Freq(Hz):"; //2,0
 // const char text3[] = "Duty(%):"; //4,0
+
+void LED_Init(void){
+    for(char i = 0; i < 8; i++){
+        LED(i) = 0;
+    }
+}
 void MODE_PWM_OUTPUT_Run(void){    
     uint16_t freq = 5;
 
@@ -18,6 +24,7 @@ void MODE_PWM_OUTPUT_Run(void){
     uint32_t last_time = 0;
     uint8_t num = 0;
 
+    LED_Init();
     PWM_TIM2_Start();
     while (no_long_pressed) {
         current_time = HAL_GetTick();        
@@ -61,6 +68,7 @@ void MODE_PWM_LIGHT_Run(void){
 
     uint32_t ccr_num = 0;
 
+    LED_Init();
     PWM_TIM2_Start();
 
     while (no_long_pressed){
@@ -79,7 +87,8 @@ void MODE_PWM_LIGHT_Run(void){
             LL_TIM_GenerateEvent_UPDATE(TIM2);
         }
     }
-		
+	LL_TIM_SetAutoReload(TIM2,20000-1); // arr = 19999
+    LL_TIM_OC_SetCompareCH1(TIM2, 9); //duty = 90%, ccr = 9
 	PWM_TIM2_Stop();
 }
 
@@ -89,11 +98,11 @@ void MODE_PWM_ADC_OUTPUT_Run(void){
     uint8_t num = 0;
 
     ADC_Pot_Start();
-    PWM_TIM2_Start();
-
     uint16_t adc_value = ADC_Pot_ReadFiltered();
     // uint32_t Vol = ADC_Pot_GetVoltage_mV();
     uint16_t freq = (adc_value * 100) / 4095;
+    PWM_TIM2_Setfreq(freq);
+    PWM_TIM2_Start();
 
     while(no_long_pressed){
         current_time = HAL_GetTick();
@@ -112,6 +121,7 @@ void MODE_PWM_ADC_OUTPUT_Run(void){
         //     OLED_ShowNum(4, 64, Vol);
         // }
         if(current_time - last_time >= 10){
+            Key_Scan();
             adc_value = ADC_Pot_ReadFiltered();
             last_time = current_time;
             num = (num + 1) % 20;
@@ -122,52 +132,69 @@ void MODE_PWM_ADC_OUTPUT_Run(void){
     ADC_Pot_Stop();
     // OLED_Clear();
 }
+
+void PA0_SetGPIO(void){
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    GPIO_InitStruct.Pin = GPIO_PIN_0;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET);
+}
+
+void PA0_DefultGPIO(void){
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    GPIO_InitStruct.Pin = GPIO_PIN_0;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+}
+
 void MODE_FLOWINGLIGHT_Run(void){
-    uint8_t light[8] = {0,1,2,3,4,5,6,7};
-    uint16_t period[3] = {50,200,400};
-    uint8_t n = 0;
-    uint8_t i = 0;
-    uint8_t direction = 0;
+    PWM_TIM2_Stop();
+    PA0_SetGPIO();
+    LED_Init();
 
     uint32_t current_time = HAL_GetTick();
-    uint32_t last_time = 0;
-    uint16_t num = 0;
+    uint32_t key_last_time = HAL_GetTick();
+    uint32_t led_last_time = HAL_GetTick();
+
+    char light[] = {0,1,2,3,4,5,6,7};
+    char direction = 0;
+    char n = 0;
+
+    uint16_t period[] = {200, 400, 800}; //单位：ms
+    char i = 0;
+
+    LED(light[n]) = 1;
 
     while(no_long_pressed){
+        Delay_ms(1);
         current_time = HAL_GetTick();
-        // if((num % 20) == 0){
-        //     char *mode = OLED_ShowMode(current_mode);
-        //     OLED_ShowString(0, 0, mode);
-        //     num++;
-        // }
-
-        if((num % (period[i] / 10)) == 0){
-            if(direction){
-                LED(light[n]) = 1;
-                LED(light[(n + 7) % 8]) = 0;
-                n = (n+1) % 8;
-            }
-            else{
-                LED(light[n]) = 1;
-                LED(light[(n + 1) % 8]) = 0;
-                n = (n+1) % 8;
-            }
-        }
-        if(current_time - last_time >=10){
-        Key_Scan();
-        last_time = current_time;
-        num += 1;
+        
+        if((current_time - key_last_time) >= 10){
+            Key_Scan();
+            key_last_time = current_time;
         }
 
         if(key[0].event == KEY_SHORT){
-            i = (i + 1) % 3;
+            i = (i+1) % 3;
             key[0].event = KEY_NONE;
-        }
-        else if(key[1].event == KEY_SHORT){
+        }else if(key[1].event == KEY_SHORT){
             direction = !direction;
             key[1].event = KEY_NONE;
         }
+
+        if((current_time - led_last_time) >= period[i]){
+            led_last_time = current_time;
+            LED(light[n]) = 0;
+            char next = direction ? (n + 1) % 8 : (n + 7) % 8;
+            LED(light[next]) = 1;
+            n = next;
+        }
     }
+    PA0_DefultGPIO();
 }
 
 // char* OLED_ShowMode(tMode current_mode) {
