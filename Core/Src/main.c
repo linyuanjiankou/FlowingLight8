@@ -51,7 +51,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-tMode current_mode = MODE_PWM_ADC;
+tMode current_mode = MODE_PWM_OUTPUT;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -97,11 +97,12 @@ int main(void)
   MX_ADC1_Init();
   MX_TIM1_Init();
   MX_TIM2_Init();
-  MX_I2C2_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 	PWM_TIM2_Init();
   PWM_TIM2_Start();
   OLED_Init();
+	OLED_Clear();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -111,6 +112,12 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+   OLED_Clear();
+   char *mode = OLED_ShowMode(current_mode);
+   OLED_ShowString(0, 0, mode);
+
+    // OLED_ShowChar(0,0,'9');
+    
     switch (current_mode)
     {
       case MODE_PWM_OUTPUT:
@@ -130,15 +137,18 @@ int main(void)
 				break;
       case MODE_FLOWINGLIGHT:
         MODE_FLOWINGLIGHT_Run();
-        current_mode = MODE_MAX;
+        current_mode = MODE_PWM_INPUT;
         KEY_Clear();
 				break;
-			case MODE_MAX:
+      case MODE_PWM_INPUT:
+        MODE_PWM_INPUT_Run();
+        current_mode = MODE_MAX;
+        KEY_Clear();
+        break;  
+      case MODE_MAX:
         current_mode = MODE_PWM_OUTPUT;
         KEY_Clear();
 				break;
-      // case MODE_PWM_INPUT:
-      //   MODE_PWM_INPUT_Run();
     }
   }
   /* USER CODE END 3 */
