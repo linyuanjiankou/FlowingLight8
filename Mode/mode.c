@@ -1,6 +1,6 @@
 #include "mode.h"
 #include "adc_pot.h"
-// #include "OLED.h"
+#include "OLED.h"
 #include "key.h"
 #include "tim2_pwm.h"
 #include "pre.h"
@@ -8,9 +8,9 @@
 
 uint8_t ccr[3] = {1, 5, 9};
 
-// const char text1[] = "Vol(mV):"; //4,0
-// const char text2[] = "Freq(Hz):"; //2,0
-// const char text3[] = "Duty(%):"; //4,0
+const char text1[] = "Vol(mV):"; //4,0
+const char text2[] = "Freq(Hz):"; //2,0
+const char text3[] = "Duty(%):"; //4,0
 
 void LED_Init(void){
     for(char i = 0; i < 8; i++){
@@ -25,22 +25,10 @@ void MODE_PWM_OUTPUT_Run(void){
     uint8_t num = 0;
 
     LED_Init();
-    PWM_TIM2_Start();
+    PWM_TIM2_Start();    
     while (no_long_pressed) {
-        current_time = HAL_GetTick();        
-        // if(num == 0){
-        //     float true_freq = (float) freq / 10.0f;
+        current_time = HAL_GetTick();      
 
-
-        //     OLED_ShowString(2, 72, "    ");
-        //     OLED_ShowString(4, 64, "    ");
-        //     char *mode = OLED_ShowMode(current_mode);
-        //     OLED_ShowString(0, 0, mode);
-        //     OLED_ShowString(2, 0, text2);
-        //     OLED_ShowNum(2, 72, true_freq);
-        //     OLED_ShowString(4, 0, text3);
-        //     OLED_ShowNum(4, 64, duty[duty_num]);
-        // }
         if(current_time - last_time >=10){
             Key_Scan();
             last_time = current_time;
@@ -57,7 +45,7 @@ void MODE_PWM_OUTPUT_Run(void){
     LL_TIM_SetAutoReload(TIM2,9); //arr = 10-1
     LL_TIM_OC_SetCompareCH1(TIM2, 1); //ccr = 1, duty = 10%
     PWM_TIM2_Stop();
-    // OLED_Clear();
+    OLED_Clear();
 
 }
 
@@ -99,27 +87,27 @@ void MODE_PWM_ADC_OUTPUT_Run(void){
 
     ADC_Pot_Start();
     uint16_t adc_value = ADC_Pot_ReadFiltered();
-    // uint32_t Vol = ADC_Pot_GetVoltage_mV();
+    uint32_t Vol = ADC_Pot_GetVoltage_mV();
     uint16_t freq = (adc_value * 100) / 4095;
     PWM_TIM2_Setfreq(freq);
     PWM_TIM2_Start();
 
     while(no_long_pressed){
         current_time = HAL_GetTick();
-        // float true_freq = (float) freq / 10.0f;
+        float true_freq = (float) freq / 10.0f;
         adc_value = ADC_Pot_ReadFiltered();
         freq = (adc_value * 100) / 4095;
         PWM_TIM2_Setfreq(freq);
-        // if(num == 0){
+        if(num == 0){
             
-        //     char *mode = OLED_ShowMode(current_mode);
-        //     OLED_ShowString(0, 0, mode);
-        //     OLED_ShowString(2, 0, text2);
-        //     OLED_ShowString(2, 72, "    ");
-        //     OLED_ShowNum(2, 72, true_freq);
-        //     OLED_ShowString(4, 0, text1);
-        //     OLED_ShowNum(4, 64, Vol);
-        // }
+            char *mode = OLED_ShowMode(current_mode);
+            OLED_ShowString(0, 0, mode);
+            OLED_ShowString(2, 0, text2);
+            OLED_ShowString(2, 72, "    ");
+            OLED_ShowNum(2, 72, true_freq);
+            OLED_ShowString(4, 0, text1);
+            OLED_ShowNum(4, 64, Vol);
+        }
         if(current_time - last_time >= 10){
             Key_Scan();
             adc_value = ADC_Pot_ReadFiltered();
@@ -197,24 +185,23 @@ void MODE_FLOWINGLIGHT_Run(void){
     PA0_DefultGPIO();
 }
 
-// char* OLED_ShowMode(tMode current_mode) {
-//     switch (current_mode) {
-//         case MODE_PWM_OUTPUT:
-//             return "Mode:General";
+char* OLED_ShowMode(tMode current_mode) {
+    switch (current_mode) {
+        case MODE_PWM_OUTPUT:
+            return "Mode:Freq";
 
-//         case MODE_PWM_ADC:
-//             return "Mode:ADC";
+        case MODE_PWM_LIGHT:
+            return "Mode:Light";
 
-//         case MODE_FLOWINGLIGHT:
-//             return "Mode:Flow";
+        case MODE_PWM_ADC:
+            return "Mode:ADC";
 
-//         case MODE_MAX:
-// 			break;
-//     }
-// 		return "Mode:Err";
-// }
-// void MODE_PWM_INPUT_Run(){
-//     if(is_long_pressed) is_long_pressed = 0;
+        case MODE_FLOWINGLIGHT:
+            return "Mode:Flow";
 
-//     PWM_Input_Init();
-// }
+        case MODE_MAX:
+			break;
+    }
+		return "Mode:Err";
+}
+

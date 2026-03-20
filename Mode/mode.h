@@ -12,7 +12,7 @@ typedef enum{
     MODE_PWM_LIGHT,
     MODE_PWM_ADC,
     MODE_FLOWINGLIGHT,
-    // MODE_PWM_INPUT,
+    MODE_PWM_INPUT,
     MODE_MAX,
 }tMode;
 
@@ -25,7 +25,7 @@ void PA0_SetGPIO(void);
 void PA0_DefultGPIO(void);
 void MODE_PWM_ADC_OUTPUT_Run(void);
 void MODE_FLOWINGLIGHT_Run(void);
-// char* OLED_ShowMode(tMode current_mode);
+char* OLED_ShowMode(tMode current_mode);
 
 #define no_long_pressed key[0].event != KEY_LONG && key[1].event != KEY_LONG
 
