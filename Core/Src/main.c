@@ -114,8 +114,6 @@ int main(void)
    OLED_Clear();
    char *mode = OLED_ShowMode(current_mode);
    OLED_ShowString(0, 0, mode);
-
-    // OLED_ShowChar(0,0,'9');
     
     switch (current_mode)
     {
@@ -139,11 +137,6 @@ int main(void)
         current_mode = MODE_PWM_INPUT;
         KEY_Clear();
 				break;
-      case MODE_PWM_INPUT:
-        MODE_PWM_INPUT_Run();
-        current_mode = MODE_MAX;
-        KEY_Clear();
-        break;  
       case MODE_MAX:
         current_mode = MODE_PWM_OUTPUT;
         KEY_Clear();

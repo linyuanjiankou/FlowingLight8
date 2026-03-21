@@ -10,8 +10,6 @@ uint8_t ccr[3] = {1, 5, 9};
 
 const char text1[] = "Vol(mV):"; //4,0
 const char text2[] = "Freq(Hz):"; //2,0
-const char text3[] = "Duty(%):"; //4,0
-
 void LED_Init(void){
     for(char i = 0; i < 8; i++){
         LED(i) = 0;
@@ -110,7 +108,6 @@ void MODE_PWM_ADC_OUTPUT_Run(void){
         }
         if(current_time - last_time >= 10){
             Key_Scan();
-            adc_value = ADC_Pot_ReadFiltered();
             last_time = current_time;
             num = (num + 1) % 20;
         }
@@ -118,7 +115,7 @@ void MODE_PWM_ADC_OUTPUT_Run(void){
     }
     PWM_TIM2_Stop();
     ADC_Pot_Stop();
-    // OLED_Clear();
+    OLED_Clear();
 }
 
 void PA0_SetGPIO(void){
@@ -182,6 +179,7 @@ void MODE_FLOWINGLIGHT_Run(void){
             n = next;
         }
     }
+    LED_Init();
     PA0_DefultGPIO();
 }
 

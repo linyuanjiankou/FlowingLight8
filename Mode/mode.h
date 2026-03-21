@@ -12,7 +12,6 @@ typedef enum{
     MODE_PWM_LIGHT,
     MODE_PWM_ADC,
     MODE_FLOWINGLIGHT,
-    MODE_PWM_INPUT,
     MODE_MAX,
 }tMode;
 
