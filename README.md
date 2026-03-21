@@ -126,7 +126,7 @@ FlowingLight8/
 
 #### 2. 编译与烧录(二选一)
 
-1. 克隆仓库：`git clone [你的仓库地址]`
+1. 克隆仓库：`git clone https://github.com/linyuanjiankou/STM32-Interactive-LED`
 2. 打开工程，检查 `main.c` 中的系统时钟是否配置为 **72MHz**。
 
 **🅰️ 方案 A：使用 VSCode 进行开发与编译 (推荐)**
