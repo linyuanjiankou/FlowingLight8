@@ -4,7 +4,7 @@
             "path": "."
         },
         {
-            "name": "WaterfallLight8",
+            "name": "STM32-Interactive-LED",
             "path": "../.."
         }
     ],
